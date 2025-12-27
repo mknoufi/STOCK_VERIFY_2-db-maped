@@ -1074,7 +1074,7 @@ def create_access_token(data: dict):
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 
-async def get_current_user(
+async def get_current_user_local(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
     try:
