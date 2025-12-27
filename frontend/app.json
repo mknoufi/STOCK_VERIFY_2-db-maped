@@ -17,6 +17,9 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
+      "androidStatusBar": {
+        "backgroundColor": "#000000"
+      },
       "edgeToEdgeEnabled": true
     },
     "web": {
