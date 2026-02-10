@@ -60,7 +60,7 @@
     "metro": "^0.83.3",
     "metro-resolver": "^0.83.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react-dom": "19.2.3",
     "react-hook-form": "^7.52.1",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
