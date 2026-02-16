@@ -13,7 +13,7 @@ ENV EXPO_PUBLIC_API_URL=$EXPO_PUBLIC_API_URL
 
 RUN npm run build:web
 
-FROM nginx:alpine
+FROM nginx:1.29.4-alpine3.23
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
