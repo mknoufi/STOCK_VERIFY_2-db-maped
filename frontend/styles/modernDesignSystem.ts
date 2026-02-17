@@ -18,21 +18,21 @@ import { StyleSheet, Platform } from 'react-native';
 // ==========================================
 
 export const modernColors = {
-  // Primary Brand Colors - Vibrant Blue
+  // Primary Brand Colors - Stitch Blue (Vibrant)
   primary: {
-    50: '#EFF6FF',
-    100: '#DBEAFE',
-    200: '#BFDBFE',
-    300: '#93C5FD',
-    400: '#60A5FA',
-    500: '#3B82F6', // Main primary
-    600: '#2563EB',
-    700: '#1D4ED8',
-    800: '#1E40AF',
-    900: '#1E3A8A',
+    50: '#EBF3FF',
+    100: '#D6E4FF',
+    200: '#ADC8FF',
+    300: '#84A9FF',
+    400: '#5A8BFF',
+    500: '#256AF4', // Stitch Main Brand Color
+    600: '#1D52D9',
+    700: '#163EBD',
+    800: '#102CA2',
+    900: '#0B1E87',
   },
 
-  // Secondary - Emerald Green
+  // Secondary - Emerald Green (Retained for success/safe states)
   secondary: {
     50: '#ECFDF5',
     100: '#D1FAE5',
@@ -46,7 +46,7 @@ export const modernColors = {
     900: '#064E3B',
   },
 
-  // Accent - Purple
+  // Accent - Purple (Retained)
   accent: {
     50: '#F5F3FF',
     100: '#EDE9FE',
@@ -60,17 +60,17 @@ export const modernColors = {
     900: '#4C1D95',
   },
 
-  // Neutral Grays - Dark Mode Optimized
+  // Neutral Grays - Stitch Charcoal & Slate
   neutral: {
-    50: '#F9FAFB',
-    100: '#F3F4F6',
-    200: '#E5E7EB',
-    300: '#D1D5DB',
-    400: '#9CA3AF',
-    500: '#6B7280',
-    600: '#4B5563',
-    700: '#374151',
-    800: '#1F2937',
+    50: '#F5F6F8', // Stitch Light Background
+    100: '#E8EAED',
+    200: '#D1D5DB',
+    300: '#9CA3AF',
+    400: '#6B7280',
+    500: '#4B5563',
+    600: '#374151',
+    700: '#1F2937',
+    800: '#1A1A1A', // Stitch Charcoal
     900: '#111827',
     950: '#030712',
   },
@@ -85,7 +85,7 @@ export const modernColors = {
 
   error: {
     light: '#FEE2E2',
-    main: '#EF4444',
+    main: '#EF4444', // Stitch Alert/Error
     dark: '#DC2626',
     contrast: '#FFFFFF',
   },
@@ -99,47 +99,47 @@ export const modernColors = {
 
   info: {
     light: '#DBEAFE',
-    main: '#3B82F6',
-    dark: '#2563EB',
+    main: '#256AF4',
+    dark: '#1D52D9',
     contrast: '#FFFFFF',
   },
 
-  // Background Colors (Dark Mode)
+  // Background Colors (Dark Mode Optimized for Stitch)
   background: {
-    default: '#0F172A',      // Slate 900
-    paper: '#1E293B',        // Slate 800
-    elevated: '#334155',     // Slate 700
-    overlay: 'rgba(15, 23, 42, 0.8)',
-    glass: 'rgba(30, 41, 59, 0.7)', // Glassmorphism
+    default: '#101622', // Stitch Dark Background
+    paper: '#1A1A1A', // Stitch Charcoal (Card Bg)
+    elevated: '#242C38', // Slightly lighter for elevation
+    overlay: 'rgba(16, 22, 34, 0.8)',
+    glass: 'rgba(26, 26, 26, 0.7)', // Glassmorphism base
   },
 
   // Text Colors
   text: {
-    primary: '#F8FAFC',      // Slate 50
-    secondary: '#94A3B8',    // Slate 400
-    tertiary: '#64748B',     // Slate 500
-    disabled: '#475569',     // Slate 600
-    inverse: '#0F172A',      // Slate 900
-    link: '#60A5FA',         // Blue 400
-    linkHover: '#93C5FD',    // Blue 300
+    primary: '#F8FAFC', // Slate 50
+    secondary: '#94A3B8', // Slate 400
+    tertiary: '#64748B', // Slate 500
+    disabled: '#475569', // Slate 600
+    inverse: '#101622', // Dark Bg
+    link: '#5A8BFF', // Stitch Link Blue
+    linkHover: '#84A9FF', // Lighter Blue
   },
 
   // Border Colors
   border: {
-    light: '#334155',        // Slate 700
-    medium: '#475569',       // Slate 600
-    dark: '#64748B',         // Slate 500
-    focus: '#3B82F6',        // Blue 500
-    error: '#EF4444',        // Red 500
+    light: '#334155', // Slate 700
+    medium: '#475569', // Slate 600
+    dark: '#64748B', // Slate 500
+    focus: '#256AF4', // Stitch Focus Blue
+    error: '#EF4444', // Red 500
   },
 
   // Gradient Definitions
   gradients: {
-    primary: ['#3B82F6', '#2563EB', '#1D4ED8'],
+    primary: ['#256AF4', '#1D52D9', '#163EBD'],
     secondary: ['#10B981', '#059669', '#047857'],
     accent: ['#8B5CF6', '#7C3AED', '#6D28D9'],
-    dark: ['#1E293B', '#0F172A', '#020617'],
-    surface: ['#334155', '#1E293B', '#0F172A'],
+    dark: ['#1A1A1A', '#101622', '#080B11'],
+    surface: ['#242C38', '#1A1A1A', '#101622'],
     success: ['#10B981', '#059669'],
     warning: ['#F59E0B', '#D97706'],
     error: ['#EF4444', '#DC2626'],

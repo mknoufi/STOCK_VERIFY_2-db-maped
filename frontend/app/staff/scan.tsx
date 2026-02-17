@@ -1030,7 +1030,7 @@ export default function ScanScreen() {
 
     try {
       updatePhotoState({ photoCaptureLoading: true });
-      
+
       const photo = await photoCameraRef.current.takePictureAsync({
         quality: 0.7,
         base64: true,
@@ -1078,6 +1078,8 @@ export default function ScanScreen() {
   }, [photoState.photoCameraType, updatePhotoState]);
 
   const [isLoadingItem, setIsLoadingItem] = React.useState(false);
+  const [showDuplicateModal, setShowDuplicateModal] = React.useState(false);
+  const [duplicateItemData, setDuplicateItemData] = React.useState<any>(null);
 
   const lookupItem = async (barcode: string) => {
     if (!sessionId) {
@@ -1111,30 +1113,18 @@ export default function ScanScreen() {
         updateWorkflowState({ existingCountLine: existingLine });
         updateItemState({ currentItem: item });
 
-        Alert.alert(
-          '🔄 Duplicate Scan Detected',
-          `${item.item_name}\n\nCurrent Count: ${existingLine.counted_qty} ${item.uom_name || ''}\nCounted by: ${existingLine.counted_by}\n\nWhat would you like to do?`,
-          [
-            { text: 'Cancel', style: 'cancel', onPress: () => resetForm() },
-            {
-              text: 'Add Quantity',
-              onPress: () => {
-                updateWorkflowState({ additionalQty: '1' });
-                updateWorkflowState({ showAddQuantityModal: true });
-              }
-            },
-            {
-              text: 'Count Again',
-              onPress: () => {
-                updateWorkflowState({ existingCountLine: null });
-                prepareItemForCounting(item);
-                if (item.item_code) {
-                  RecentItemsService.addRecent(item.item_code, item).catch(() => { });
-                }
-              }
-            }
-          ]
-        );
+        // Item already counted - show custom hard-block modal
+        const existingLine = countCheck.count_lines[0];
+        updateWorkflowState({ existingCountLine: existingLine });
+        updateItemState({ currentItem: item });
+
+        setDuplicateItemData({
+          itemName: item.item_name,
+          currentCount: existingLine.counted_qty,
+          uom: item.uom_name || '',
+          countedBy: existingLine.counted_by || 'Unknown'
+        });
+        setShowDuplicateModal(true);
       } else {
         prepareItemForCounting(item);
         // Add to recent items service
@@ -1728,8 +1718,8 @@ export default function ScanScreen() {
       // Error logged via error handler
       const apiError = error as ApiErrorResponse;
       const detail = apiError?.response?.data?.detail;
-      const errorMsg = (typeof detail === 'object' ? detail?.message : detail) 
-        || apiError?.message 
+      const errorMsg = (typeof detail === 'object' ? detail?.message : detail)
+        || apiError?.message
         || 'Failed to refresh stock';
       Alert.alert('Error', errorMsg);
     } finally {
@@ -1815,43 +1805,39 @@ export default function ScanScreen() {
             </View>
           </Modal>
 
-          <BlurView intensity={20} tint="dark" style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color="#fff" />
-            </TouchableOpacity>
-            <View style={styles.headerCenter}>
-              <Text style={styles.headerTitle}>Scan Items</Text>
-              {user && (
-                <Text style={styles.headerSubtitle}>{user.full_name || user.username}</Text>
-              )}
+          {/* Stitch Header */}
+          <View style={styles.header}>
+            <View style={{ flex: 1 }}>
+              <View style={styles.brandRow}>
+                <Text style={styles.brandText}>Lavanya eMart</Text>
+                <View style={styles.headerActions}>
+                  <TouchableOpacity
+                    onPress={() => router.push(`/staff/history?sessionId=${sessionId}`)}
+                    style={styles.historyButton}
+                  >
+                    <Ionicons name="list" size={24} color="#9CA3AF" />
+                  </TouchableOpacity>
+                  <View style={styles.headerProfileContainer}>
+                    <Ionicons name="person" size={20} color="#9CA3AF" />
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.statusRail}>
+                <View style={[styles.statusPill, styles.statusPillSuccess]}>
+                  <View style={styles.statusDot} />
+                  <Text style={styles.statusText}>Access: Allowed</Text>
+                </View>
+                <View style={[styles.statusPill, styles.statusPillInfo]}>
+                  <View style={[styles.statusDot, { backgroundColor: '#256AF4' }]} />
+                  <Text style={styles.statusText}>Device: Bound</Text>
+                </View>
+                <TouchableOpacity onPress={handleLogout} style={{ marginLeft: 'auto' }}>
+                  <Ionicons name="log-out-outline" size={20} color="#94A3B8" />
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.headerActions}>
-              {/* Power Saving Indicator - commented out until component is created */}
-              {/* <PowerSavingIndicator powerState={powerState} compact /> */}
-              <TouchableOpacity
-                onPress={() => updateWorkflowState({ autoIncrementEnabled: !workflowState.autoIncrementEnabled })}
-                style={styles.toggleButton}
-              >
-                <Ionicons
-                  name={workflowState.autoIncrementEnabled ? "add-circle" : "add-circle-outline"}
-                  size={24}
-                  color={workflowState.autoIncrementEnabled ? "#3B82F6" : "#94A3B8"}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => router.push(`/staff/history?sessionId=${sessionId}`)}
-                style={styles.historyButton}
-              >
-                <Ionicons name="list" size={24} color="#fff" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleLogout}
-                style={styles.logoutButton}
-              >
-                <Ionicons name="log-out-outline" size={24} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          </BlurView>
+          </View>
 
           {/* Auto-Increment Status Banner */}
           {workflowState.autoIncrementEnabled && (
@@ -2367,6 +2353,58 @@ export default function ScanScreen() {
                 </TouchableOpacity>
               </TouchableOpacity>
             </KeyboardAvoidingView>
+          </Modal>
+
+          {/* Stitch Hard-Block Modal (Duplicate Serial) */}
+          <Modal visible={showDuplicateModal} transparent animationType="fade">
+            <View style={styles.hardBlockOverlay}>
+              <View style={styles.hardBlockContent}>
+                <View style={styles.hardBlockHeader}>
+                  <Ionicons name="warning" size={48} color="#EF4444" />
+                  <Text style={styles.hardBlockTitle}>Hard Block</Text>
+                  <Text style={{ color: '#EF4444', marginTop: 4, fontWeight: '600' }}>DUPLICATE SERIAL DETECTED</Text>
+                </View>
+
+                <View style={styles.hardBlockBody}>
+                  <View style={styles.hardBlockRow}>
+                    <Text style={styles.hardBlockLabel}>Item Name</Text>
+                    <Text style={styles.hardBlockValue}>{duplicateItemData?.itemName}</Text>
+                  </View>
+                  <View style={styles.hardBlockRow}>
+                    <Text style={styles.hardBlockLabel}>Current Count</Text>
+                    <Text style={[styles.hardBlockValue, { color: '#EF4444' }]}>
+                      {duplicateItemData?.currentCount} {duplicateItemData?.uom}
+                    </Text>
+                  </View>
+                  <View style={styles.hardBlockRow}>
+                    <Text style={styles.hardBlockLabel}>Counted By</Text>
+                    <Text style={styles.hardBlockValue}>{duplicateItemData?.countedBy}</Text>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.hardBlockButton}
+                  onPress={() => {
+                    setShowDuplicateModal(false);
+                    // Standard action: Reset/Cancel to enforce block
+                    resetForm();
+                  }}
+                >
+                  <Text style={styles.hardBlockButtonText}>Acknowledge & Dismiss</Text>
+                </TouchableOpacity>
+
+                {/* Optional: Allow "View Conflict" or other actions if strictness allows */}
+                <TouchableOpacity
+                  style={{ padding: 16, alignItems: 'center' }}
+                  onPress={() => {
+                    setShowDuplicateModal(false);
+                    updateWorkflowState({ additionalQty: '1', showAddQuantityModal: true });
+                  }}
+                >
+                  <Text style={{ color: '#6B7280', fontSize: 14 }}>Or Add Quantity (Supervisor Override)</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </Modal>
 
           {/* Add Quantity Modal */}
